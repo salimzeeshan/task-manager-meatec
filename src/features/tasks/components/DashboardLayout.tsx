@@ -14,6 +14,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       <nav className="flex items-center justify-between px-4 py-2 border-b bg-card">
         <div className="flex items-center gap-2 font-bold text-lg">
+          <h1 className="sr-only" aria-label="Task Manager">Task Manager</h1>
           <span className="hidden sm:inline">TaskFlow</span>
           <span className="sm:hidden">TF</span>
         </div>
