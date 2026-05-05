@@ -1,13 +1,13 @@
-import React from 'react';
 import { useTheme } from '@/shared/hooks/useTheme';
 import { Sun, Moon } from 'lucide-react';
 import { cn } from '@/shared/utils/cn';
+import type { ReactNode } from 'react';
 
 interface DashboardLayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
-export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
+export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const { theme, toggleTheme } = useTheme();
 
   return (
@@ -18,6 +18,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
           <span className="hidden sm:inline">Task Manager</span>
           <span className="sm:hidden">TF</span>
         </div>
+
         <button
           onClick={toggleTheme}
           className={cn(
@@ -33,6 +34,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
           )}
         </button>
       </nav>
+
       <main className="flex-1 w-full max-w-5xl mx-auto px-2 sm:px-4 py-4">
         {children}
       </main>
