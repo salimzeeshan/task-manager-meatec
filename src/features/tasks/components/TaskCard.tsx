@@ -28,7 +28,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete }) =>
       <div className="flex gap-2 mt-2">
         {onEdit && (
           <button
-            className="text-primary hover:underline text-xs"
+          className="inline-flex text-primary items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium
+            text-muted-foreground hover:text-primary bg-primary/10 hover:underline
+            transition-colors duration-150"
             onClick={() => onEdit(task)}
             type="button"
           >
@@ -37,7 +39,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete }) =>
         )}
         {onDelete && (
           <button
-            className="text-destructive hover:underline text-xs"
+          className="inline-flex text-destructive bg-destructive/10  items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium
+            text-muted-foreground hover:text-destructive hover:underline
+            transition-colors duration-150"
             onClick={() => onDelete(task)}
             type="button"
           >
