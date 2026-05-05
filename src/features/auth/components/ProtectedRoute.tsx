@@ -1,0 +1,31 @@
+import React, { useEffect } from 'react';
+import { useAuthStore } from '../store/authStore';
+import { Outlet, Navigate } from 'react-router-dom';
+
+export const ProtectedRoute: React.FC = () => {
+  const { isAuthenticated, initializeAuth } = useAuthStore();
+
+  useEffect(() => {
+    initializeAuth();
+    // eslint-disable-next-line
+  }, []);
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  return <Outlet />;
+};
+
+export const RequireGuest: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isAuthenticated, initializeAuth } = useAuthStore();
+
+  useEffect(() => {
+    initializeAuth();
+    // eslint-disable-next-line
+  }, []);
+
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+  return <>{children}</>;
+};
