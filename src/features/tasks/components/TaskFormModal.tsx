@@ -50,7 +50,12 @@ export const TaskFormModal: React.FC<TaskFormModalProps> = ({ open, onClose, tas
         <DialogHeader>
           <DialogTitle>{isEditMode ? 'Edit Task' : 'Create Task'}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={formik.handleSubmit} className="space-y-4">
+        <form onSubmit={formik.handleSubmit} className="space-y-4 relative">
+          {formik.isSubmitting && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/80 backdrop-blur-sm rounded">
+              <Loader2 className="animate-spin h-8 w-8 text-primary" />
+            </div>
+          )}
           {/* Title */}
           <div>
             <Input
