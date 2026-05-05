@@ -9,7 +9,7 @@ export interface AuthResponse {
   user: User;
 }
 
-export type TaskStatus = 'todo' | 'in-progress' | 'done';
+export type TaskStatus = 'todo' | 'in-progress' | 'done' | undefined;
 
 export interface Task {
   id: string;
