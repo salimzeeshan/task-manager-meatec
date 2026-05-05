@@ -1,28 +1,29 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { LoginPage, ProtectedRoute, RequireGuest } from '@/features/auth';
 
-const DashboardPage: React.FC = () => (
-  <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
-    <h1 className="text-2xl font-bold">Dashboard (Protected)</h1>
-  </div>
-);
+import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
+import { NotFoundPage } from '@/shared/components/NotFoundPage';
+import { DashboardPage } from '@/features/tasks/components/DashboardPage';
 
 export const App: React.FC = () => (
-  <BrowserRouter>
-    <Routes>
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      <Route
-        path="/login"
-        element={
-          <RequireGuest>
-            <LoginPage />
-          </RequireGuest>
-        }
-      />
-      <Route element={<ProtectedRoute />}>
-        <Route path="/dashboard" element={<DashboardPage />} />
-      </Route>
-    </Routes>
-  </BrowserRouter>
+  <ErrorBoundary>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route
+          path="/login"
+          element={
+            <RequireGuest>
+              <LoginPage />
+            </RequireGuest>
+          }
+        />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard" element={<DashboardPage />} />
+        </Route>
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </BrowserRouter>
+  </ErrorBoundary>
 );
