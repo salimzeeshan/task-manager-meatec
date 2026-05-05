@@ -8,6 +8,7 @@ interface AuthState {
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isInitializing: boolean;
   error: string | null;
   login: (payload: LoginPayload) => Promise<void>;
   logout: () => void;
@@ -20,6 +21,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   token: null,
   isAuthenticated: false,
   isLoading: false,
+  isInitializing: false,
   error: null,
 
   async login(payload) {
@@ -48,20 +50,24 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   initializeAuth() {
+    set({ isInitializing: true });
     const token = localStorage.getItem('auth_token');
     const userStr = localStorage.getItem('auth_user');
     if (!token || !userStr) {
       get().logout();
+      set({ isInitializing: false });
       return;
     }
     if (isTokenExpired(token)) {
       get().logout();
+      set({ isInitializing: false });
       return;
     }
     set({
       token,
       user: JSON.parse(userStr),
       isAuthenticated: true,
+      isInitializing: false,
     });
   },
 

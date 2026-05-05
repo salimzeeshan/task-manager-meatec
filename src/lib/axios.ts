@@ -28,7 +28,7 @@ export const apiClient: AxiosInstance = axios.create({
 });
 
 apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('auth_token');
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -43,7 +43,7 @@ apiClient.interceptors.response.use(
     const status = error.response?.status ?? 500;
 
     if (status === 401) {
-      localStorage.removeItem('token');
+      localStorage.removeItem('auth_token');
       window.dispatchEvent(new CustomEvent('auth:logout'));
     }
 
