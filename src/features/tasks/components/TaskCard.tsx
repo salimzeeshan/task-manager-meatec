@@ -8,6 +8,32 @@ interface TaskCardProps {
   onDelete?: (task: Task) => void;
 }
 
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+
+  const day = date.getDate();
+
+  const getOrdinal = (n: number) => {
+    if (n > 3 && n < 21) return 'th';
+    switch (n % 10) {
+      case 1: return 'st';
+      case 2: return 'nd';
+      case 3: return 'rd';
+      default: return 'th';
+    }
+  };
+
+  const formatted = new Intl.DateTimeFormat('en-GB', {
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',   // ✅ fix here
+    minute: '2-digit',
+    hour12: true,
+  }).format(date);
+
+  return `${day}${getOrdinal(day)} ${formatted}`;
+};
+
 export const TaskCard = ({ task, onEdit, onDelete }: TaskCardProps) => {
   return (
     <Card className="p-4 flex flex-col gap-2 shadow-sm border border-border">
@@ -37,8 +63,8 @@ export const TaskCard = ({ task, onEdit, onDelete }: TaskCardProps) => {
       </p>
 
       <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground">
-        <span>Created: {new Date(task.createdAt).toLocaleString()}</span>
-        <span>Updated: {new Date(task.updatedAt).toLocaleString()}</span>
+        <span>Created: {formatDate(task.createdAt)}</span>
+        <span>Updated: {formatDate(task.updatedAt)}</span>
       </div>
 
       <div className="flex gap-2 mt-2">
