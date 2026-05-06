@@ -1,7 +1,8 @@
 import { useTheme } from '@/shared/hooks/useTheme';
-import { Sun, Moon } from 'lucide-react';
+import { Sun, Moon, LogOut } from 'lucide-react';
 import { cn } from '@/shared/utils/cn';
 import type { ReactNode } from 'react';
+import { useAuthStore } from '@/features/auth';
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -9,6 +10,7 @@ interface DashboardLayoutProps {
 
 export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const { theme, toggleTheme } = useTheme();
+  const { logout } = useAuthStore();
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
@@ -19,20 +21,32 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           <span className="sm:hidden">TF</span>
         </div>
 
-        <button
-          onClick={toggleTheme}
-          className={cn(
-            'rounded-full p-2 transition-colors',
-            theme === 'dark' ? 'hover:bg-muted' : 'hover:bg-accent'
-          )}
-          aria-label="Toggle dark mode"
-        >
-          {theme === 'dark' ? (
-            <Sun className="w-5 h-5 text-yellow-400 transition-transform" />
-          ) : (
-            <Moon className="w-5 h-5 text-blue-600 transition-transform" />
-          )}
-        </button>
+        <div>
+          <button
+            onClick={toggleTheme}
+            className={cn(
+              'rounded-full p-2 transition-colors',
+              theme === 'dark' ? 'hover:bg-muted' : 'hover:bg-accent'
+            )}
+            aria-label="Toggle dark mode"
+          >
+            {theme === 'dark' ? (
+              <Sun className="w-5 h-5 text-yellow-400 transition-transform" />
+            ) : (
+              <Moon className="w-5 h-5 text-blue-600 transition-transform" />
+            )}
+          </button>
+          <button
+            onClick={logout}
+            className={cn(
+              'rounded-full p-2 transition-colors',
+              theme === 'dark' ? 'hover:bg-muted' : 'hover:bg-accent'
+            )}
+            aria-label="logout"
+          >
+            <LogOut className="w-5 h-5 text-blue-600 transition-transform" />
+          </button>
+        </div>
       </nav>
 
       <main className="flex-1 w-full max-w-5xl mx-auto px-2 sm:px-4 py-4">

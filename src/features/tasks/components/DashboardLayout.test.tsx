@@ -4,7 +4,7 @@ import { DashboardLayout } from './DashboardLayout';
 
 const themeMock = vi.hoisted(() => ({
   value: {
-    theme: 'light' as 'light' | 'dark',
+    theme: 'light',
     toggleTheme: vi.fn(),
   },
 }));
