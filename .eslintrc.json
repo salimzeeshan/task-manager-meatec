@@ -14,7 +14,7 @@
     "project": ["./tsconfig.app.json", "./tsconfig.node.json"],
     "sourceType": "module"
   },
-  "ignorePatterns": ["coverage/**", "public/mockServiceWorker.js", "postcss.config.js"],
+  "ignorePatterns": ["coverage/**", "public/mockServiceWorker.js", "postcss.config.js", "dist/**"],
   "plugins": ["@typescript-eslint", "react", "react-hooks", "testing-library"],
   "extends": [
     "eslint:recommended",
