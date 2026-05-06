@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { User, LoginPayload } from '@/types';
+import type { AuthResponse, User, LoginPayload } from '@/types';
 import { isTokenExpired } from '@/mocks/data/jwt';
 import { apiClient } from '@/lib/axios';
 
@@ -16,6 +16,20 @@ interface AuthState {
   clearError: () => void;
 }
 
+const isUser = (value: unknown): value is User => {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return false;
+  }
+
+  const user = value as Record<string, unknown>;
+
+  return (
+    typeof user.id === 'string' &&
+    typeof user.username === 'string' &&
+    typeof user.email === 'string'
+  );
+};
+
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   token: null,
@@ -27,7 +41,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   async login(payload) {
     set({ isLoading: true, error: null });
     try {
-      const { data } = await apiClient.post('/login', payload);
+      const { data } = await apiClient.post<AuthResponse>('/login', payload);
       set({
         user: data.user,
         token: data.token,
@@ -35,8 +49,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       });
       localStorage.setItem('auth_token', data.token);
       localStorage.setItem('auth_user', JSON.stringify(data.user));
-    } catch (err: any) {
-      set({ error: err?.response?.data?.message || 'Login failed' });
+    } catch (err: unknown) {
+      set({ error: err instanceof Error ? err.message : 'Login failed' });
       throw err;
     } finally {
       set({ isLoading: false });
@@ -63,9 +77,18 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ isInitializing: false });
       return;
     }
+
+    const storedUser: unknown = JSON.parse(userStr);
+
+    if (!isUser(storedUser)) {
+      get().logout();
+      set({ isInitializing: false });
+      return;
+    }
+
     set({
       token,
-      user: JSON.parse(userStr),
+      user: storedUser,
       isAuthenticated: true,
       isInitializing: false,
     });
