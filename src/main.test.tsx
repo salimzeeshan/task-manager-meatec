@@ -45,13 +45,19 @@ describe('main bootstrap', () => {
     expect(mainMocks.createRoot).toHaveBeenCalledWith(document.getElementById('root'));
   });
 
-  it('renders without starting development mocking outside dev mode', async () => {
+  it('renders and starts mocking outside dev mode', async () => {
     vi.stubEnv('DEV', false);
 
     await import('./main');
-    await vi.waitFor(() => expect(mainMocks.render).toHaveBeenCalledTimes(1));
 
-    expect(mainMocks.workerStart).not.toHaveBeenCalled();
+    await vi.waitFor(() => {
+      expect(mainMocks.render).toHaveBeenCalledTimes(1);
+    });
+
+    expect(mainMocks.workerStart).toHaveBeenCalledWith({
+      onUnhandledRequest: 'bypass',
+    });
+
     expect(mainMocks.createRoot).toHaveBeenCalledWith(document.getElementById('root'));
   });
 });

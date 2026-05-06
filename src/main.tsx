@@ -4,13 +4,11 @@ import { App } from './App';
 import './index.css';
 
 async function enableMocking() {
-  if (import.meta.env.DEV) {
-    const { worker } = await import('./mocks/browser');
+  const { worker } = await import('./mocks/browser');
 
-    return worker.start({ onUnhandledRequest: 'bypass' });
-  }
-
-  return undefined;
+  return worker.start({
+    onUnhandledRequest: 'bypass',
+  });
 }
 
 void enableMocking().then(() => {
