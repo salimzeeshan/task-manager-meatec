@@ -14,6 +14,17 @@ interface TasksState {
   clearError: () => void;
 }
 
+interface TasksResponse {
+  tasks: Task[];
+}
+
+interface TaskResponse {
+  task: Task;
+}
+
+const getErrorMessage = (err: unknown, fallback: string): string =>
+  err instanceof Error ? err.message : fallback;
+
 export const useTasksStore = create<TasksState>((set, get) => ({
   tasks: [],
   isLoading: false,
@@ -23,10 +34,12 @@ export const useTasksStore = create<TasksState>((set, get) => ({
   async fetchTasks(status) {
     set({ isLoading: true, error: null });
     try {
-      const { data } = await apiClient.get('/tasks', { params: status ? { status } : {} });
+      const { data } = await apiClient.get<TasksResponse>('/tasks', {
+        params: status ? { status } : {},
+      });
       set({ tasks: data.tasks });
-    } catch (err: any) {
-      set({ error: err?.message || 'Failed to fetch tasks' });
+    } catch (err: unknown) {
+      set({ error: getErrorMessage(err, 'Failed to fetch tasks') });
     } finally {
       set({ isLoading: false });
     }
@@ -35,10 +48,10 @@ export const useTasksStore = create<TasksState>((set, get) => ({
   async createTask(payload) {
     set({ isSubmitting: true, error: null });
     try {
-      const { data } = await apiClient.post('/tasks', payload);
+      const { data } = await apiClient.post<TaskResponse>('/tasks', payload);
       set({ tasks: [data.task, ...get().tasks] });
-    } catch (err: any) {
-      set({ error: err?.message || 'Failed to create task' });
+    } catch (err: unknown) {
+      set({ error: getErrorMessage(err, 'Failed to create task') });
       throw err;
     } finally {
       set({ isSubmitting: false });
@@ -48,12 +61,12 @@ export const useTasksStore = create<TasksState>((set, get) => ({
   async updateTask(id, payload) {
     set({ isSubmitting: true, error: null });
     try {
-      const { data } = await apiClient.put(`/tasks/${id}`, payload);
+      const { data } = await apiClient.put<TaskResponse>(`/tasks/${id}`, payload);
       set({
         tasks: get().tasks.map((t) => (t.id === id ? data.task : t)),
       });
-    } catch (err: any) {
-      set({ error: err?.message || 'Failed to update task' });
+    } catch (err: unknown) {
+      set({ error: getErrorMessage(err, 'Failed to update task') });
       throw err;
     } finally {
       set({ isSubmitting: false });
@@ -65,8 +78,8 @@ export const useTasksStore = create<TasksState>((set, get) => ({
     try {
       await apiClient.delete(`/tasks/${id}`);
       set({ tasks: get().tasks.filter((t) => t.id !== id) });
-    } catch (err: any) {
-      set({ error: err?.message || 'Failed to delete task' });
+    } catch (err: unknown) {
+      set({ error: getErrorMessage(err, 'Failed to delete task') });
       throw err;
     } finally {
       set({ isSubmitting: false });

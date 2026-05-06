@@ -95,7 +95,7 @@ describe('useTasksStore', () => {
       await useTasksStore.getState().fetchTasks();
     });
 
-    expect(useTasksStore.getState().error).toBe('fail');
+    expect(useTasksStore.getState().error).toBe('Failed to fetch tasks');
     expect(useTasksStore.getState().isLoading).toBe(false);
   });
 
@@ -133,7 +133,7 @@ describe('useTasksStore', () => {
       useTasksStore.getState().createTask({ title: 'fail', description: '', status: 'todo' })
     ).rejects.toBeDefined();
 
-    expect(useTasksStore.getState().error).toBe('fail');
+    expect(useTasksStore.getState().error).toBe('Failed to create task');
     expect(useTasksStore.getState().isSubmitting).toBe(false);
   });
 
@@ -173,7 +173,7 @@ describe('useTasksStore', () => {
       useTasksStore.getState().updateTask(task.id, { title: 'fail' })
     ).rejects.toBeDefined();
 
-    expect(useTasksStore.getState().error).toBe('fail');
+    expect(useTasksStore.getState().error).toBe('Failed to update task');
     expect(useTasksStore.getState().isSubmitting).toBe(false);
   });
 
@@ -211,7 +211,7 @@ describe('useTasksStore', () => {
 
     await expect(useTasksStore.getState().deleteTask(task.id)).rejects.toBeDefined();
 
-    expect(useTasksStore.getState().error).toBe('fail');
+    expect(useTasksStore.getState().error).toBe('Failed to delete task');
     expect(useTasksStore.getState().isSubmitting).toBe(false);
   });
 
