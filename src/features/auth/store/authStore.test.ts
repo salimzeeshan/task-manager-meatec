@@ -94,7 +94,7 @@ describe('useAuthStore', () => {
         useAuthStore.getState().login({ username: 'bad', password: 'bad' })
     ).rejects.toBeDefined();
 
-    expect(useAuthStore.getState().error).toBe('fail');
+    expect(useAuthStore.getState().error).toBe('Login failed');
     });
 
     it('login uses fallback error when failure has no response message', async () => {
