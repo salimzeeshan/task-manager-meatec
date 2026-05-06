@@ -2,6 +2,7 @@ import { describe, it, vi, expect } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { TaskCard } from './TaskCard';
 import type { Task } from '@/types';
+import userEvent from '@testing-library/user-event';
 
 const task: Task = {
   id: '1',
@@ -31,9 +32,10 @@ describe('TaskCard', () => {
     expect(screen.getByText('DONE')).toBeInTheDocument();
   });
 
-  it('renders an empty status when task status is undefined', () => {
-    const { container } = render(<TaskCard task={{ ...task, status: undefined }} />);
-    expect(container.querySelector('.bg-secondary')).toBeInTheDocument();
+  it('renders UNKNOWN when task status is undefined', () => {
+    render(<TaskCard task={{ ...task, status: undefined }} />);
+
+    expect(screen.getByText('UNKNOWN')).toBeInTheDocument();
   });
 
   it('renders created and updated dates', () => {
@@ -60,10 +62,17 @@ describe('TaskCard', () => {
     expect(onEdit).toHaveBeenCalledWith(task);
   });
 
-  it('calls onDelete when Delete button clicked', () => {
+  it('calls onDelete when confirmed in modal', async () => {
+    const user = userEvent.setup();
     const onDelete = vi.fn();
+
     render(<TaskCard task={task} onDelete={onDelete} />);
-    fireEvent.click(screen.getByText('Delete'));
+
+    await user.click(screen.getByRole('button', { name: /delete/i }));
+
+    const confirmButton = await screen.findByRole('button', { name: /^confirm$/i });
+    await user.click(confirmButton);
+
     expect(onDelete).toHaveBeenCalledWith(task);
   });
 

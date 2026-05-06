@@ -1,6 +1,7 @@
 import type { Task } from '@/types';
 import { Badge } from '@/shared/components/ui/badge';
 import { Card } from '@/shared/components/ui/card';
+import { useState } from 'react';
 
 interface TaskCardProps {
   task: Task;
@@ -35,6 +36,7 @@ const formatDate = (dateString: string) => {
 };
 
 export const TaskCard = ({ task, onEdit, onDelete }: TaskCardProps) => {
+    const [showConfirm, setShowConfirm] = useState(false);
   return (
     <Card className="p-4 flex flex-col gap-2 shadow-sm border border-border">
       <div className="flex items-center justify-between">
@@ -51,7 +53,9 @@ export const TaskCard = ({ task, onEdit, onDelete }: TaskCardProps) => {
               : 'secondary'
           }
         >
-          {task.status?.replace('-', ' ').toUpperCase()}
+          {task.status
+            ? task.status.replace('-', ' ').toUpperCase()
+            : 'UNKNOWN'}
         </Badge>
       </div>
 
@@ -83,15 +87,45 @@ export const TaskCard = ({ task, onEdit, onDelete }: TaskCardProps) => {
         {onDelete && (
           <button
             className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium
-              text-muted-foreground text-destructive bg-destructive/10 hover:underline
+              text-muted-foreground text-white bg-destructive hover:underline
               transition-colors duration-150"
-            onClick={() => onDelete(task)}
+            onClick={() => setShowConfirm(true)}
             type="button"
           >
             Delete
           </button>
         )}
       </div>
+
+      {showConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-card rounded-lg shadow-lg p-6 w-full max-w-sm">
+            <h2 className="text-lg font-semibold mb-2">Delete Task</h2>
+            <p className="text-sm text-muted-foreground mb-4">
+              Are you sure you want to delete this task?
+            </p>
+
+            <div className="flex justify-end gap-2">
+              <button
+                className="px-3 py-1.5 text-sm rounded-md border hover:underline"
+                onClick={() => setShowConfirm(false)}
+              >
+                Cancel
+              </button>
+
+              <button
+                className="px-3 py-1.5 text-sm rounded-md bg-destructive text-white hover:underline"
+                onClick={() => {
+                  onDelete?.(task);
+                  setShowConfirm(false);
+                }}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </Card>
   );
 };
