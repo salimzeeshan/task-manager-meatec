@@ -1,5 +1,5 @@
 import { apiClient } from '@/lib/axios';
-import { Task, CreateTaskPayload, UpdateTaskPayload, TaskStatus } from '@/types';
+import type { Task, CreateTaskPayload, UpdateTaskPayload, TaskStatus } from '@/types';
 
 export async function fetchTasks(status?: TaskStatus): Promise<Task[]> {
   const { data } = await apiClient.get('/tasks', { params: status ? { status } : {} });

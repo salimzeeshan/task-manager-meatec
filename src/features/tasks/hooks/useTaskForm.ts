@@ -1,7 +1,8 @@
 import { useFormik } from 'formik';
 import { useTasksStore } from '../store/tasksStore';
-import { taskSchema, TaskFormValues } from '../validation/taskSchema';
-import { Task } from '@/types';
+import type { TaskFormValues } from '../validation/taskSchema';
+import { taskSchema } from '../validation/taskSchema';
+import type { Task } from '@/types';
 
 interface UseTaskFormOptions {
   task?: Task;

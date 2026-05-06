@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Task, CreateTaskPayload, UpdateTaskPayload, TaskStatus } from '@/types';
+import type { Task, CreateTaskPayload, UpdateTaskPayload, TaskStatus } from '@/types';
 import { apiClient } from '@/lib/axios';
 
 interface TasksState {

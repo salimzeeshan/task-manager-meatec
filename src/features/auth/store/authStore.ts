@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { User, LoginPayload } from '@/types';
+import type { User, LoginPayload } from '@/types';
 import { isTokenExpired } from '@/mocks/data/jwt';
 import { apiClient } from '@/lib/axios';
 

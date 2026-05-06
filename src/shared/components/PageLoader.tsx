@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 
 export const PageLoader: React.FC = () => (
   <div className="min-h-screen flex items-center justify-center bg-background text-foreground">

@@ -1,5 +1,5 @@
 import * as yup from 'yup';
-import { TaskStatus } from '@/types';
+import type { TaskStatus } from '@/types';
 
 export const taskSchema = yup.object({
   title: yup
