@@ -74,7 +74,9 @@ vi.mock('@/shared/components/ui/select', async () => {
         <div>{children}</div>
       </SelectContext.Provider>
     ),
-    SelectTrigger: ({ children }: { children: React.ReactNode }) => <button type="button">{children}</button>,
+    SelectTrigger: ({ children }: { children: React.ReactNode }) => (
+      <button type="button">{children}</button>
+    ),
     SelectContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
     SelectItem: ({ children, value }: { children: React.ReactNode; value: string }) => {
       const { disabled, onValueChange } = React.useContext(SelectContext);
@@ -301,23 +303,5 @@ describe('TaskFormModal', () => {
 
     expect(onClose).toHaveBeenCalledTimes(1);
     expect(toast.success).toHaveBeenCalledWith('Task updated!');
-  });
-
-  it('renders fallback status label when current status is unknown', () => {
-    hookMocks.useTaskForm.mockReturnValue({
-      formik: createFormik({
-        values: {
-          title: '',
-          description: '',
-          status: undefined,
-        },
-      }),
-      isEditMode: false,
-      descriptionLength: 0,
-    });
-
-    render(<TaskFormModal open onClose={vi.fn()} />);
-
-    expect(screen.getByText('Select status')).toBeInTheDocument();
   });
 });

@@ -113,10 +113,7 @@ export const TaskFormModal: React.FC<TaskFormModalProps> = ({ open, onClose, tas
               disabled={formik.isSubmitting}
             >
               <SelectTrigger>
-                <span>
-                  {statusOptions.find((s) => s.value === formik.values.status)?.label ||
-                    'Select status'}
-                </span>
+                <span>{statusOptions.find((s) => s.value === formik.values.status)?.label}</span>
               </SelectTrigger>
               <SelectContent>
                 {statusOptions.map((option) => (
