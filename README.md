@@ -1,4 +1,4 @@
-# Task Manager MEATEC
+# Task Manager - MEATEC
 
 A Vite + React task manager with mocked authentication and task APIs. The app includes a protected dashboard, task CRUD flows, status filtering, form validation, local auth persistence, and a full Vitest test setup.
 
