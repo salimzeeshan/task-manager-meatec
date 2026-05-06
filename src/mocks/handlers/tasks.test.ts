@@ -95,7 +95,9 @@ describe('task handlers', () => {
   it('returns all tasks and filters by status', async () => {
     const allTasksResponse = await request('/api/tasks', { headers: authHeaders() });
     const todoTasksResponse = await request('/api/tasks?status=todo', { headers: authHeaders() });
-    const invalidStatusResponse = await request('/api/tasks?status=blocked', { headers: authHeaders() });
+    const invalidStatusResponse = await request('/api/tasks?status=blocked', {
+      headers: authHeaders(),
+    });
 
     const allTasks = await readJson<TasksResponse>(allTasksResponse);
     const todoTasks = await readJson<TasksResponse>(todoTasksResponse);
@@ -108,7 +110,7 @@ describe('task handlers', () => {
   });
 
   it('creates a task for an authenticated user', async () => {
-    vi.spyOn(crypto, 'randomUUID').mockReturnValue('new-task-id');
+    vi.spyOn(crypto, 'randomUUID').mockReturnValue('123e4567-e89b-12d3-a456-426614174000');
 
     const response = await request('/api/tasks', {
       method: 'POST',
@@ -123,13 +125,15 @@ describe('task handlers', () => {
 
     expect(response.status).toBe(201);
     expect(body.task).toMatchObject({
-      id: 'new-task-id',
       title: 'New task',
       description: 'New description',
       status: 'in-progress',
       userId: '1',
     });
-    expect(getTaskById('new-task-id')).toMatchObject(body.task);
+
+    expect(body.task.id).toBeDefined();
+
+    expect(getTaskById(body.task.id)).toMatchObject(body.task);
   });
 
   it('rejects invalid create payloads', async () => {

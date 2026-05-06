@@ -51,7 +51,9 @@ describe('mock db helpers', () => {
   });
 
   it('creates a task for a user', () => {
-    vi.spyOn(crypto, 'randomUUID').mockReturnValue('new-task-id');
+    const mockedId = '123e4567-e89b-12d3-a456-426614174000';
+
+    vi.spyOn(crypto, 'randomUUID').mockReturnValue(mockedId);
 
     const task = createTask('1', {
       title: 'New task',
@@ -60,7 +62,7 @@ describe('mock db helpers', () => {
     });
 
     expect(task).toEqual({
-      id: 'new-task-id',
+      id: mockedId,
       title: 'New task',
       description: 'New description',
       status: 'in-progress',
@@ -68,7 +70,8 @@ describe('mock db helpers', () => {
       updatedAt: '2024-01-10T12:00:00.000Z',
       userId: '1',
     });
-    expect(getTaskById('new-task-id')).toEqual(task);
+
+    expect(getTaskById(mockedId)).toEqual(task);
   });
 
   it('updates an existing task', () => {
