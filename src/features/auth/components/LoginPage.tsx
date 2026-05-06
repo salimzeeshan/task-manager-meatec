@@ -37,6 +37,8 @@ export const LoginPage: React.FC = () => {
         await login(values);
         resetForm();
         await navigate('/dashboard');
+      } catch {
+        // Error is handled by the store
       } finally {
         setSubmitting(false);
       }

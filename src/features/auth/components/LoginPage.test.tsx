@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { LoginPage } from './LoginPage';
 import type * as ReactRouterDom from 'react-router-dom';
+import { act } from 'react';
 
 const navigateMock = vi.hoisted(() => vi.fn());
 const authStoreMock = vi.hoisted(() => ({
@@ -116,7 +117,10 @@ describe('LoginPage', () => {
 
     expect(screen.getByTestId('spinner')).toBeInTheDocument();
 
-    resolveLogin();
+    await act(async () => {
+      resolveLogin();
+      await Promise.resolve();
+    });
   });
 
   it('does not navigate when login fails', async () => {
