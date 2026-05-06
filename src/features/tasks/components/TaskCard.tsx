@@ -31,7 +31,7 @@ const formatDate = (dateString: string) => {
   const formatted = new Intl.DateTimeFormat('en-GB', {
     month: 'short',
     year: 'numeric',
-    hour: '2-digit', // ✅ fix here
+    hour: '2-digit',
     minute: '2-digit',
     hour12: true,
   }).format(date);
