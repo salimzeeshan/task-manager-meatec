@@ -1,9 +1,18 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useFormik } from 'formik';
-import { loginSchema, LoginFormValues } from '../validation/loginSchema';
+import { loginSchema } from '../validation/loginSchema';
+import type { LoginFormValues } from '../validation/loginSchema';
 import { useAuthStore } from '../store/authStore';
-import { Button, Input, Label, Avatar, Badge } from '@/shared/components/ui';
-import { AlertCircle, CheckSquare, Eye, EyeOff, Loader2, ListTodo, ShieldCheck } from 'lucide-react';
+import { Button, Input, Label, Badge } from '@/shared/components/ui';
+import {
+  AlertCircle,
+  CheckSquare,
+  Eye,
+  EyeOff,
+  Loader2,
+  ListTodo,
+  ShieldCheck,
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
 
@@ -15,7 +24,6 @@ const featureBullets = [
 
 export const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
   const { login, error, clearError } = useAuthStore();
 
@@ -29,8 +37,6 @@ export const LoginPage: React.FC = () => {
         await login(values);
         resetForm();
         await navigate('/dashboard');
-      } catch {
-        // error is being handled in store
       } finally {
         setSubmitting(false);
       }
@@ -63,11 +69,10 @@ export const LoginPage: React.FC = () => {
         <div className="flex-1 flex flex-col justify-center p-8 bg-card">
           <form onSubmit={formik.handleSubmit} className="w-full max-w-sm mx-auto animate-fade-in">
             <div className="flex flex-col items-center mb-6">
-              <Avatar className="mb-2 bg-primary text-white">
-                <CheckSquare className="w-6 h-6" />
-              </Avatar>
               <h2 className="text-2xl font-bold mb-1">Welcome back</h2>
-              <Badge variant="secondary" className="mb-2">Sign in to continue</Badge>
+              <Badge variant="secondary" className="mb-2">
+                Sign in to continue
+              </Badge>
             </div>
             {/* Username */}
             <div className="mb-4">
@@ -77,7 +82,9 @@ export const LoginPage: React.FC = () => {
                 type="text"
                 autoComplete="username"
                 {...formik.getFieldProps('username')}
-                className={clsx({ 'border-destructive': formik.touched.username && formik.errors.username })}
+                className={clsx({
+                  'border-destructive': formik.touched.username && formik.errors.username,
+                })}
               />
               {formik.touched.username && formik.errors.username && (
                 <div className="text-destructive text-xs mt-1 flex items-center gap-1">
@@ -95,7 +102,9 @@ export const LoginPage: React.FC = () => {
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="current-password"
                   {...formik.getFieldProps('password')}
-                  className={clsx({ 'border-destructive': formik.touched.password && formik.errors.password })}
+                  className={clsx({
+                    'border-destructive': formik.touched.password && formik.errors.password,
+                  })}
                 />
                 <button
                   type="button"
@@ -114,30 +123,29 @@ export const LoginPage: React.FC = () => {
                 </div>
               )}
             </div>
-            {/* Remember Me */}
-            <div className="mb-4 flex items-center gap-2">
-              <input
-                id="rememberMe"
-                type="checkbox"
-                checked={rememberMe}
-                onChange={() => setRememberMe((v) => !v)}
-                className="accent-primary"
-              />
-              <Label htmlFor="rememberMe" className="text-sm">Remember me</Label>
-            </div>
             {/* Error Alert */}
             {error && (
               <div className="mb-4 bg-destructive/10 border border-destructive text-destructive rounded px-3 py-2 flex items-center justify-between gap-2 animate-fade-in">
-                <span className="flex items-center gap-1"><AlertCircle className="w-4 h-4" />{error}</span>
-                <button type="button" onClick={clearError} className="ml-2 text-xs underline">Dismiss</button>
+                <span className="flex items-center gap-1">
+                  <AlertCircle className="w-4 h-4" />
+                  {error}
+                </span>
+                <button type="button" onClick={clearError} className="ml-2 text-xs underline">
+                  Dismiss
+                </button>
               </div>
             )}
             {/* Submit Button */}
             <Button type="submit" className="w-full" disabled={formik.isSubmitting}>
-              {formik.isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Login'}
+              {formik.isSubmitting ? (
+                <Loader2 data-testid="spinner" className="w-4 h-4 animate-spin" />
+              ) : (
+                'Login'
+              )}
             </Button>
             <div className="text-xs text-muted-foreground mt-4 text-center">
-              Use <span className="font-mono">test</span> / <span className="font-mono">test123</span> to login
+              Use <span className="font-mono">test</span> /{' '}
+              <span className="font-mono">test123</span> to login
             </div>
           </form>
         </div>

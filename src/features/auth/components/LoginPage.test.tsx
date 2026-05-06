@@ -1,7 +1,8 @@
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { LoginPage } from './LoginPage';
+import type * as ReactRouterDom from 'react-router-dom';
 
 const navigateMock = vi.hoisted(() => vi.fn());
 const authStoreMock = vi.hoisted(() => ({
@@ -13,7 +14,7 @@ const authStoreMock = vi.hoisted(() => ({
 }));
 
 vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
+  const actual = await vi.importActual<typeof ReactRouterDom>('react-router-dom');
 
   return {
     ...actual,
@@ -61,16 +62,6 @@ describe('LoginPage', () => {
     expect(passwordInput).toHaveAttribute('type', 'password');
   });
 
-  it('toggles remember me', () => {
-    renderLoginPage();
-    const checkbox = screen.getByLabelText('Remember me');
-
-    expect(checkbox).not.toBeChecked();
-
-    fireEvent.click(checkbox);
-    expect(checkbox).toBeChecked();
-  });
-
   it('shows validation errors when submitting empty fields', async () => {
     renderLoginPage();
 
@@ -102,26 +93,30 @@ describe('LoginPage', () => {
 
   it('shows submitting state while login is pending', async () => {
     const user = userEvent.setup();
+
     let resolveLogin: () => void = () => {};
     authStoreMock.state.login.mockReturnValue(
       new Promise<void>((resolve) => {
         resolveLogin = resolve;
       })
     );
-    const { container } = renderLoginPage();
 
-    await user.type(screen.getByLabelText('Username'), 'test');
-    await user.type(screen.getByLabelText('Password'), 'test123');
-    await user.click(screen.getByRole('button', { name: 'Login' }));
+    renderLoginPage();
+
+    await user.type(screen.getByLabelText(/username/i), 'test');
+    await user.type(screen.getByLabelText(/^password$/i), 'test123');
+
+    const submitButton = screen.getByRole('button', { name: /login/i });
+
+    await user.click(submitButton);
 
     await waitFor(() => {
-      expect(container.querySelector('button[type="submit"]')).toBeDisabled();
-      expect(container.querySelector('.animate-spin')).toBeInTheDocument();
+      expect(submitButton).toBeDisabled();
     });
 
-    await act(async () => {
-      resolveLogin();
-    });
+    expect(screen.getByTestId('spinner')).toBeInTheDocument();
+
+    resolveLogin();
   });
 
   it('does not navigate when login fails', async () => {
