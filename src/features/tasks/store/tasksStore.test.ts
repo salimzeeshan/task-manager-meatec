@@ -110,6 +110,17 @@ describe('useTasksStore', () => {
     expect(useTasksStore.getState().isLoading).toBe(false);
   });
 
+  it('fetchTasks stores Error messages on failure', async () => {
+    mockGet.mockRejectedValueOnce(new Error('Network down'));
+
+    await act(async () => {
+      await useTasksStore.getState().fetchTasks();
+    });
+
+    expect(useTasksStore.getState().error).toBe('Network down');
+    expect(useTasksStore.getState().isLoading).toBe(false);
+  });
+
   it('createTask adds new task on success', async () => {
     useTasksStore.setState({ tasks: [secondTask], error: 'previous error' });
 
