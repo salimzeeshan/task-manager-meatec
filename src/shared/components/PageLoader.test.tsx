@@ -4,9 +4,9 @@ import { PageLoader } from './PageLoader';
 
 describe('PageLoader', () => {
   it('renders the loading message and spinner', () => {
-    const { container } = render(<PageLoader />);
+    render(<PageLoader />);
 
     expect(screen.getByText('Loading...')).toBeInTheDocument();
-    expect(container.querySelector('.animate-spin')).toBeInTheDocument();
+    expect(screen.getByRole('status')).toBeInTheDocument();
   });
 });
