@@ -1,22 +1,48 @@
 import { describe, expect, it } from 'vitest';
 import { parseJWT } from '@mocks/data';
-import { authHandlers } from './auth';
+import type { AuthResponse } from '@/types';
+
+const isAuthResponse = (value: unknown): value is AuthResponse => {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return false;
+  }
+
+  const candidate = value as Record<string, unknown>;
+  const user = candidate.user;
+
+  if (!user || typeof user !== 'object' || Array.isArray(user)) {
+    return false;
+  }
+
+  const candidateUser = user as Record<string, unknown>;
+
+  return (
+    typeof candidate.token === 'string' &&
+    typeof candidateUser.id === 'string' &&
+    typeof candidateUser.username === 'string' &&
+    typeof candidateUser.email === 'string'
+  );
+};
 
 const login = (body: unknown): Promise<Response> =>
-  (authHandlers[0] as any).resolver({
-    request: new Request('http://localhost/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    }),
+  fetch('/api/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
   });
 
 describe('auth handlers', () => {
   it('logs in a valid user', async () => {
     const response = await login({ username: 'test', password: 'test123' });
-    const body = await response.json();
+    const body: unknown = await response.json();
 
     expect(response.status).toBe(200);
+    expect(isAuthResponse(body)).toBe(true);
+
+    if (!isAuthResponse(body)) {
+      throw new Error('Expected an auth response');
+    }
+
     expect(body.user).toEqual({
       id: '1',
       username: 'test',
