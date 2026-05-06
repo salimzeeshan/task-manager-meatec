@@ -58,7 +58,7 @@ export const TaskCard = ({ task, onEdit, onDelete }: TaskCardProps) => {
                 : 'secondary'
           }
         >
-          {task.status ? task.status.replace('-', ' ').toUpperCase() : 'UNKNOWN'}
+          {task.status.replace('-', ' ').toUpperCase()}{' '}
         </Badge>
       </div>
 

@@ -32,12 +32,6 @@ describe('TaskCard', () => {
     expect(screen.getByText('DONE')).toBeInTheDocument();
   });
 
-  it('renders UNKNOWN when task status is undefined', () => {
-    render(<TaskCard task={{ ...task, status: undefined }} />);
-
-    expect(screen.getByText('UNKNOWN')).toBeInTheDocument();
-  });
-
   it('renders created and updated dates', () => {
     render(<TaskCard task={task} />);
     expect(screen.getByText(/Created:/)).toBeInTheDocument();
