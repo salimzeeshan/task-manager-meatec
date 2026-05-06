@@ -78,8 +78,8 @@ export const DashboardPage: React.FC = () => {
         <div className="flex justify-center items-center min-h-[40vh]">Loading...</div>
       ) : tasks.length === 0 ? (
         <div className="flex flex-col items-center justify-center min-h-[40vh] gap-2 text-muted-foreground">
-          <span className="text-2xl font-semibold">No tasks found</span>
-          <span className="text-sm">Get started by creating your first task.</span>
+          <span className="text-2xl font-semibold mb-3">No tasks found</span>
+          <Button onClick={handleCreateTask} className="ml-2">Create a task</Button>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 mt-4">
