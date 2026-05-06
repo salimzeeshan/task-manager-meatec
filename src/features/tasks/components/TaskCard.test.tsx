@@ -82,3 +82,23 @@ describe('TaskCard', () => {
     expect(screen.queryByText('Delete')).toBeNull();
   });
 });
+
+it('renders ordinal suffix "st" for days ending in 1 (e.g. 21st)', () => {
+  render(<TaskCard task={{ ...task, createdAt: '2024-01-21T00:00:00.000Z' }} />);
+  expect(screen.getAllByText(/21st/).length).toBeGreaterThan(0);
+});
+
+it('closes confirm dialog without calling onDelete when Cancel is clicked', async () => {
+  const user = userEvent.setup();
+  const onDelete = vi.fn();
+
+  render(<TaskCard task={task} onDelete={onDelete} />);
+
+  await user.click(screen.getByRole('button', { name: /delete/i }));
+  expect(await screen.findByText('Are you sure you want to delete this task?')).toBeInTheDocument();
+
+  await user.click(screen.getByRole('button', { name: /^cancel$/i }));
+
+  expect(screen.queryByText('Are you sure you want to delete this task?')).not.toBeInTheDocument();
+  expect(onDelete).not.toHaveBeenCalled();
+});
