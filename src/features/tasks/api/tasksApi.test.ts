@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { AxiosHeaders, type AxiosResponse } from 'axios';
 import { apiClient } from '@/lib/axios';
 import type { CreateTaskPayload, Task, UpdateTaskPayload } from '@/types';
 import { createTask, deleteTask, fetchTasks, updateTask } from './tasksApi';
@@ -11,6 +12,14 @@ vi.mock('@/lib/axios', () => ({
     delete: vi.fn(),
   },
 }));
+
+const axiosResponse = <T>(data: T): AxiosResponse<T> => ({
+  data,
+  status: 200,
+  statusText: 'OK',
+  headers: {},
+  config: { headers: new AxiosHeaders() },
+});
 
 describe('tasksApi', () => {
   const task: Task = {
@@ -28,7 +37,7 @@ describe('tasksApi', () => {
   });
 
   it('fetches tasks without a status filter', async () => {
-    apiClient.get.mockResolvedValueOnce({ data: { tasks: [task] } });
+    vi.mocked(apiClient.get).mockResolvedValueOnce(axiosResponse({ tasks: [task] }));
 
     await expect(fetchTasks()).resolves.toEqual([task]);
 
@@ -36,7 +45,7 @@ describe('tasksApi', () => {
   });
 
   it('fetches tasks with a status filter', async () => {
-    apiClient.get.mockResolvedValueOnce({ data: { tasks: [task] } });
+    vi.mocked(apiClient.get).mockResolvedValueOnce(axiosResponse({ tasks: [task] }));
 
     await expect(fetchTasks('todo')).resolves.toEqual([task]);
 
@@ -49,7 +58,7 @@ describe('tasksApi', () => {
       description: 'desc',
       status: 'todo',
     };
-    apiClient.post.mockResolvedValueOnce({ data: { task } });
+    vi.mocked(apiClient.post).mockResolvedValueOnce(axiosResponse({ task }));
 
     await expect(createTask(payload)).resolves.toEqual(task);
 
@@ -59,7 +68,7 @@ describe('tasksApi', () => {
   it('updates a task', async () => {
     const payload: UpdateTaskPayload = { title: 'Updated Task' };
     const updatedTask = { ...task, ...payload };
-    apiClient.put.mockResolvedValueOnce({ data: { task: updatedTask } });
+    vi.mocked(apiClient.put).mockResolvedValueOnce(axiosResponse({ task: updatedTask }));
 
     await expect(updateTask(task.id, payload)).resolves.toEqual(updatedTask);
 
@@ -67,7 +76,7 @@ describe('tasksApi', () => {
   });
 
   it('deletes a task', async () => {
-    apiClient.delete.mockResolvedValueOnce({});
+    vi.mocked(apiClient.delete).mockResolvedValueOnce(axiosResponse(undefined));
 
     await expect(deleteTask(task.id)).resolves.toBeUndefined();
 
