@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import { loginSchema, LoginFormValues } from '../validation/loginSchema';
 import { useAuthStore } from '../store/authStore';
-import { Button, Input, Label, Card, Avatar, Badge } from '@/shared/components/ui';
+import { Button, Input, Label, Avatar, Badge } from '@/shared/components/ui';
 import { AlertCircle, CheckSquare, Eye, EyeOff, Loader2, ListTodo, ShieldCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
@@ -28,9 +28,9 @@ export const LoginPage: React.FC = () => {
       try {
         await login(values);
         resetForm();
-        navigate('/dashboard');
+        await navigate('/dashboard');
       } catch {
-        // error handled in store
+        // error is being handled in store
       } finally {
         setSubmitting(false);
       }
