@@ -2,7 +2,13 @@ import type React from 'react';
 import { useEffect, useRef } from 'react';
 import { useTaskForm } from '../hooks/useTaskForm';
 import type { Task } from '@/types';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/shared/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/shared/components/ui/dialog';
 import { Input } from '@/shared/components/ui/input';
 import { Textarea } from '@/shared/components/ui/textarea';
 import { Button } from '@/shared/components/ui/button';
@@ -32,12 +38,13 @@ export const TaskFormModal: React.FC<TaskFormModalProps> = ({ open, onClose, tas
       toast.success(isEditMode ? 'Task updated!' : 'Task created!');
     },
   });
+  const { resetForm } = formik;
 
   useEffect(() => {
     if (!open) {
-      formik.resetForm();
+      resetForm();
     }
-  }, [open]);
+  }, [open, resetForm]);
 
   useEffect(() => {
     if (open) {
@@ -85,10 +92,12 @@ export const TaskFormModal: React.FC<TaskFormModalProps> = ({ open, onClose, tas
               ) : (
                 <span />
               )}
-              <span className={cn(
-                'text-xs text-muted-foreground',
-                descriptionLength > 500 && 'text-destructive'
-              )}>
+              <span
+                className={cn(
+                  'text-xs text-muted-foreground',
+                  descriptionLength > 500 && 'text-destructive'
+                )}
+              >
                 {descriptionLength}/500
               </span>
             </div>
@@ -98,14 +107,15 @@ export const TaskFormModal: React.FC<TaskFormModalProps> = ({ open, onClose, tas
             <Select
               value={formik.values.status}
               onValueChange={(value) => {
-                formik.setFieldValue('status', value);
-                formik.setFieldTouched('status', true);
+                void formik.setFieldValue('status', value);
+                void formik.setFieldTouched('status', true);
               }}
               disabled={formik.isSubmitting}
             >
               <SelectTrigger>
                 <span>
-                  {statusOptions.find((s) => s.value === formik.values.status)?.label || 'Select status'}
+                  {statusOptions.find((s) => s.value === formik.values.status)?.label ||
+                    'Select status'}
                 </span>
               </SelectTrigger>
               <SelectContent>
@@ -125,7 +135,12 @@ export const TaskFormModal: React.FC<TaskFormModalProps> = ({ open, onClose, tas
           </div>
           {/* Footer */}
           <DialogFooter className="flex gap-2 justify-end">
-            <Button type="button" variant="outline" onClick={onClose} disabled={formik.isSubmitting}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              disabled={formik.isSubmitting}
+            >
               Cancel
             </Button>
             <Button type="submit" disabled={formik.isSubmitting}>
@@ -133,7 +148,11 @@ export const TaskFormModal: React.FC<TaskFormModalProps> = ({ open, onClose, tas
                 <>
                   <Loader2 className="animate-spin mr-2 h-4 w-4" /> Saving...
                 </>
-              ) : isEditMode ? 'Save Changes' : 'Create Task'}
+              ) : isEditMode ? (
+                'Save Changes'
+              ) : (
+                'Create Task'
+              )}
             </Button>
           </DialogFooter>
         </form>
