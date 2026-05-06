@@ -37,6 +37,7 @@ describe('useAuthStore', () => {
   });
 
   it('login sets user, token, isAuthenticated on success', async () => {
+    useAuthStore.setState({ error: 'previous error' });
     apiClient.post.mockResolvedValueOnce({ data: { user, token } });
     await act(async () => {
       await useAuthStore.getState().login({ username: 'test', password: 'pw' });
@@ -45,6 +46,7 @@ describe('useAuthStore', () => {
     expect(state.user).toEqual(user);
     expect(state.token).toBe(token);
     expect(state.isAuthenticated).toBe(true);
+    expect(state.error).toBeNull();
     expect(localStorage.getItem('auth_token')).toBe(token);
     expect(localStorage.getItem('auth_user')).toBe(JSON.stringify(user));
   });
@@ -86,6 +88,13 @@ describe('useAuthStore', () => {
       useAuthStore.getState().login({ username: 'bad', password: 'bad' })
     ).rejects.toBeDefined();
     expect(useAuthStore.getState().error).toBe('fail');
+  });
+
+  it('login uses fallback error when failure has no response message', async () => {
+    apiClient.post.mockRejectedValueOnce({});
+    await expect(useAuthStore.getState().login({ username: 'bad', password: 'bad' })).rejects.toEqual({});
+    expect(useAuthStore.getState().error).toBe('Login failed');
+    expect(useAuthStore.getState().isLoading).toBe(false);
   });
 
   it('logout clears user, token, isAuthenticated', () => {

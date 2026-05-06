@@ -21,10 +21,36 @@ describe('TaskCard', () => {
     expect(screen.getByText('TODO')).toBeInTheDocument();
   });
 
+  it('renders in-progress status', () => {
+    render(<TaskCard task={{ ...task, status: 'in-progress' }} />);
+    expect(screen.getByText('IN PROGRESS')).toBeInTheDocument();
+  });
+
+  it('renders done status', () => {
+    render(<TaskCard task={{ ...task, status: 'done' }} />);
+    expect(screen.getByText('DONE')).toBeInTheDocument();
+  });
+
+  it('renders an empty status when task status is undefined', () => {
+    const { container } = render(<TaskCard task={{ ...task, status: undefined }} />);
+    expect(container.querySelector('.bg-secondary')).toBeInTheDocument();
+  });
+
   it('renders created and updated dates', () => {
     render(<TaskCard task={task} />);
     expect(screen.getByText(/Created:/)).toBeInTheDocument();
     expect(screen.getByText(/Updated:/)).toBeInTheDocument();
+  });
+
+  it.each([
+    ['2024-01-02T00:00:00.000Z', /2nd/],
+    ['2024-01-03T00:00:00.000Z', /3rd/],
+    ['2024-01-04T00:00:00.000Z', /4th/],
+    ['2024-01-11T00:00:00.000Z', /11th/],
+    ['2024-01-30T00:00:00.000Z', /30th/],
+  ])('renders ordinal suffix for %s', (createdAt, expectedDate) => {
+    render(<TaskCard task={{ ...task, createdAt }} />);
+    expect(screen.getAllByText(expectedDate).length).toBeGreaterThan(0);
   });
 
   it('calls onEdit when Edit button clicked', () => {

@@ -23,6 +23,11 @@ describe('useTasksStore', () => {
     updatedAt: new Date().toISOString(),
     userId: 'u1',
   };
+  const secondTask: Task = {
+    ...task,
+    id: '2',
+    title: 'Second Task',
+  };
 
   beforeEach(() => {
     useTasksStore.setState({
@@ -43,6 +48,7 @@ describe('useTasksStore', () => {
   });
 
   it('fetchTasks sets tasks on success (no status)', async () => {
+    useTasksStore.setState({ error: 'previous error' });
     apiClient.get.mockResolvedValueOnce({ data: { tasks: [task] } });
     await act(async () => {
       await useTasksStore.getState().fetchTasks();
@@ -73,12 +79,22 @@ describe('useTasksStore', () => {
     expect(useTasksStore.getState().isLoading).toBe(false);
   });
 
+  it('fetchTasks uses fallback error when failure has no message', async () => {
+    apiClient.get.mockRejectedValueOnce({});
+    await act(async () => {
+      await useTasksStore.getState().fetchTasks();
+    });
+    expect(useTasksStore.getState().error).toBe('Failed to fetch tasks');
+    expect(useTasksStore.getState().isLoading).toBe(false);
+  });
+
   it('createTask adds new task on success', async () => {
+    useTasksStore.setState({ tasks: [secondTask], error: 'previous error' });
     apiClient.post.mockResolvedValueOnce({ data: { task } });
     await act(async () => {
       await useTasksStore.getState().createTask({ title: 'Test Task', description: 'desc', status: 'todo' });
     });
-    expect(useTasksStore.getState().tasks[0]).toEqual(task);
+    expect(useTasksStore.getState().tasks).toEqual([task, secondTask]);
     expect(useTasksStore.getState().isSubmitting).toBe(false);
     expect(useTasksStore.getState().error).toBeNull();
   });
@@ -97,14 +113,23 @@ describe('useTasksStore', () => {
     expect(useTasksStore.getState().isSubmitting).toBe(false);
   });
 
+  it('createTask uses fallback error when failure has no message', async () => {
+    apiClient.post.mockRejectedValueOnce({});
+    await expect(
+      useTasksStore.getState().createTask({ title: 'fail', description: '', status: 'todo' })
+    ).rejects.toEqual({});
+    expect(useTasksStore.getState().error).toBe('Failed to create task');
+    expect(useTasksStore.getState().isSubmitting).toBe(false);
+  });
+
   it('updateTask updates task on success', async () => {
-    useTasksStore.setState({ tasks: [task] });
+    useTasksStore.setState({ tasks: [task, secondTask], error: 'previous error' });
     const updated = { ...task, title: 'Updated' };
     apiClient.put.mockResolvedValueOnce({ data: { task: updated } });
     await act(async () => {
       await useTasksStore.getState().updateTask(task.id, { title: 'Updated' });
     });
-    expect(useTasksStore.getState().tasks[0].title).toBe('Updated');
+    expect(useTasksStore.getState().tasks).toEqual([updated, secondTask]);
     expect(useTasksStore.getState().isSubmitting).toBe(false);
     expect(useTasksStore.getState().error).toBeNull();
   });
@@ -124,13 +149,21 @@ describe('useTasksStore', () => {
     expect(useTasksStore.getState().isSubmitting).toBe(false);
   });
 
-  it('deleteTask removes task on success', async () => {
+  it('updateTask uses fallback error when failure has no message', async () => {
     useTasksStore.setState({ tasks: [task] });
+    apiClient.put.mockRejectedValueOnce({});
+    await expect(useTasksStore.getState().updateTask(task.id, { title: 'fail' })).rejects.toEqual({});
+    expect(useTasksStore.getState().error).toBe('Failed to update task');
+    expect(useTasksStore.getState().isSubmitting).toBe(false);
+  });
+
+  it('deleteTask removes task on success', async () => {
+    useTasksStore.setState({ tasks: [task, secondTask], error: 'previous error' });
     apiClient.delete.mockResolvedValueOnce({});
     await act(async () => {
       await useTasksStore.getState().deleteTask(task.id);
     });
-    expect(useTasksStore.getState().tasks).toEqual([]);
+    expect(useTasksStore.getState().tasks).toEqual([secondTask]);
     expect(useTasksStore.getState().isSubmitting).toBe(false);
     expect(useTasksStore.getState().error).toBeNull();
   });
@@ -147,6 +180,14 @@ describe('useTasksStore', () => {
     }
     expect(thrown).toBe(true);
     expect(useTasksStore.getState().error).toBe('fail');
+    expect(useTasksStore.getState().isSubmitting).toBe(false);
+  });
+
+  it('deleteTask uses fallback error when failure has no message', async () => {
+    useTasksStore.setState({ tasks: [task] });
+    apiClient.delete.mockRejectedValueOnce({});
+    await expect(useTasksStore.getState().deleteTask(task.id)).rejects.toEqual({});
+    expect(useTasksStore.getState().error).toBe('Failed to delete task');
     expect(useTasksStore.getState().isSubmitting).toBe(false);
   });
 
