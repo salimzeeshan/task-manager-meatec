@@ -30,10 +30,10 @@ export const DashboardPage: React.FC = () => {
   }, [status]);
 
   useEffect(() => {
-    if (error && tasks.length > 0) {
+    if (error && tasks?.length > 0) {
       toast.error(error);
     }
-  }, [error, tasks.length]);
+  }, [error, tasks?.length]);
 
   const handleEditTask = (task: Task) => {
     setEditingTask(task);
@@ -76,14 +76,14 @@ export const DashboardPage: React.FC = () => {
       </div>
       {isLoading ? (
         <div className="flex justify-center items-center min-h-[40vh]">Loading...</div>
-      ) : tasks.length === 0 ? (
+      ) : tasks?.length === 0 ? (
         <div className="flex flex-col items-center justify-center min-h-[40vh] gap-2 text-muted-foreground">
           <span className="text-2xl font-semibold mb-3">No tasks found</span>
           <Button onClick={handleCreateTask} className="ml-2">Create a task</Button>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 mt-4">
-          {tasks.map((task) => (
+          {tasks?.map((task) => (
             <TaskCard
               key={task.id}
               task={task}
