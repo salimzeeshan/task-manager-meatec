@@ -83,6 +83,19 @@ describe('useAuthStore', () => {
       expect(state.isAuthenticated).toBe(true);
       expect(state.isInitializing).toBe(false);
     });
+
+    it('logs out if the stored user is invalid', () => {
+      localStorage.setItem('auth_token', token);
+      localStorage.setItem('auth_user', JSON.stringify(null));
+      vi.spyOn(jwtUtils, 'isTokenExpired').mockReturnValue(false);
+      const logoutSpy = vi.spyOn(useAuthStore.getState(), 'logout');
+
+      useAuthStore.getState().initializeAuth();
+
+      expect(useAuthStore.getState().isInitializing).toBe(false);
+      expect(useAuthStore.getState().isAuthenticated).toBe(false);
+      expect(logoutSpy).toHaveBeenCalled();
+    });
   });
 
     it('login sets error on failure', async () => {
@@ -106,6 +119,16 @@ describe('useAuthStore', () => {
 
     expect(useAuthStore.getState().error).toBe('Login failed');
     expect(useAuthStore.getState().isLoading).toBe(false);
+    });
+
+    it('login stores Error messages on failure', async () => {
+    vi.mocked(apiClient.post).mockRejectedValueOnce(new Error('Network down'));
+
+    await expect(
+        useAuthStore.getState().login({ username: 'bad', password: 'bad' })
+    ).rejects.toThrow('Network down');
+
+    expect(useAuthStore.getState().error).toBe('Network down');
     });
 
   it('logout clears user, token, isAuthenticated', () => {
