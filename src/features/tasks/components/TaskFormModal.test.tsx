@@ -1,8 +1,30 @@
 import { fireEvent, render, screen } from '@testing-library/react';
+import type React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Task } from '@/types';
+import type { Task, TaskStatus } from '@/types';
 import { TaskFormModal } from './TaskFormModal';
 import { toast } from 'sonner';
+
+interface UseTaskFormOptions {
+  task?: Task;
+  onSuccess?: () => void;
+}
+
+interface MockFormik {
+  values: {
+    title: string;
+    description: string;
+    status: TaskStatus;
+  };
+  touched: Partial<Record<'title' | 'description' | 'status', boolean>>;
+  errors: Partial<Record<'title' | 'description' | 'status', string>>;
+  isSubmitting: boolean;
+  handleSubmit: (event: Pick<React.FormEvent<HTMLFormElement>, 'preventDefault'>) => void;
+  resetForm: ReturnType<typeof vi.fn>;
+  getFieldProps: ReturnType<typeof vi.fn>;
+  setFieldValue: ReturnType<typeof vi.fn>;
+  setFieldTouched: ReturnType<typeof vi.fn>;
+}
 
 const hookMocks = vi.hoisted(() => ({
   useTaskForm: vi.fn(),
@@ -18,7 +40,7 @@ vi.mock('sonner', () => ({
   },
 }));
 
-vi.mock('@/shared/components/ui/dialog', async () => {
+vi.mock('@/shared/components/ui/dialog', () => {
   return {
     Dialog: ({ open, children }: { open: boolean; children: React.ReactNode }) =>
       open ? <div>{children}</div> : null,
@@ -66,7 +88,7 @@ vi.mock('@/shared/components/ui/select', async () => {
   };
 });
 
-const createFormik = (overrides = {}) => ({
+const createFormik = (overrides: Partial<MockFormik> = {}): MockFormik => ({
   values: {
     title: '',
     description: '',
@@ -75,7 +97,9 @@ const createFormik = (overrides = {}) => ({
   touched: {},
   errors: {},
   isSubmitting: false,
-  handleSubmit: vi.fn((event) => event.preventDefault()),
+  handleSubmit: vi.fn((event: Pick<React.FormEvent<HTMLFormElement>, 'preventDefault'>) =>
+    event.preventDefault()
+  ),
   resetForm: vi.fn(),
   getFieldProps: vi.fn((name: string) => ({
     name,
@@ -242,7 +266,7 @@ describe('TaskFormModal', () => {
   it('runs create success side effects from useTaskForm', () => {
     const onClose = vi.fn();
     let onSuccess: (() => void) | undefined;
-    hookMocks.useTaskForm.mockImplementation((options) => {
+    hookMocks.useTaskForm.mockImplementation((options: UseTaskFormOptions) => {
       onSuccess = options.onSuccess;
 
       return {
@@ -262,7 +286,7 @@ describe('TaskFormModal', () => {
   it('runs edit success side effects from useTaskForm', () => {
     const onClose = vi.fn();
     let onSuccess: (() => void) | undefined;
-    hookMocks.useTaskForm.mockImplementation((options) => {
+    hookMocks.useTaskForm.mockImplementation((options: UseTaskFormOptions) => {
       onSuccess = options.onSuccess;
 
       return {
