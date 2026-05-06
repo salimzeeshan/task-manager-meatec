@@ -17,17 +17,21 @@ const formatDate = (dateString: string) => {
   const getOrdinal = (n: number) => {
     if (n > 3 && n < 21) return 'th';
     switch (n % 10) {
-      case 1: return 'st';
-      case 2: return 'nd';
-      case 3: return 'rd';
-      default: return 'th';
+      case 1:
+        return 'st';
+      case 2:
+        return 'nd';
+      case 3:
+        return 'rd';
+      default:
+        return 'th';
     }
   };
 
   const formatted = new Intl.DateTimeFormat('en-GB', {
     month: 'short',
     year: 'numeric',
-    hour: '2-digit',   // ✅ fix here
+    hour: '2-digit', // ✅ fix here
     minute: '2-digit',
     hour12: true,
   }).format(date);
@@ -36,7 +40,8 @@ const formatDate = (dateString: string) => {
 };
 
 export const TaskCard = ({ task, onEdit, onDelete }: TaskCardProps) => {
-    const [showConfirm, setShowConfirm] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+
   return (
     <Card className="p-4 flex flex-col gap-2 shadow-sm border border-border">
       <div className="flex items-center justify-between">
@@ -49,20 +54,15 @@ export const TaskCard = ({ task, onEdit, onDelete }: TaskCardProps) => {
             task.status === 'done'
               ? 'success'
               : task.status === 'in-progress'
-              ? 'warning'
-              : 'secondary'
+                ? 'warning'
+                : 'secondary'
           }
         >
-          {task.status
-            ? task.status.replace('-', ' ').toUpperCase()
-            : 'UNKNOWN'}
+          {task.status ? task.status.replace('-', ' ').toUpperCase() : 'UNKNOWN'}
         </Badge>
       </div>
 
-      <p
-        className="text-muted-foreground text-sm line-clamp-2"
-        title={task.description}
-      >
+      <p className="text-muted-foreground text-sm line-clamp-2" title={task.description}>
         {task.description}
       </p>
 
